@@ -56,18 +56,18 @@ def generate_launch_description():
         default="/home/jacart2/dev_ws/src/ai-navigation/cart_control/localization_launch/param/localization.yaml",
     )
 
-    lidar_localization = launch_ros.actions.LifecycleNode(
-        name="lidar_localization",
-        namespace="",
-        package="lidar_localization_ros2",
-        executable="lidar_localization_node",
-        parameters=[localization_param_dir],
-        remappings=[
-            ("/odom", "/zed_front/zed_node_0/odom"),
-            ("/imu/data", "/zed/zed_node/imu/data"),
-        ],
-        output="screen",
-    )
+    # lidar_localization = launch_ros.actions.LifecycleNode(
+    #     name="lidar_localization",
+    #     namespace="",
+    #     package="lidar_localization_ros2",
+    #     executable="lidar_localization_node",
+    #     parameters=[localization_param_dir],
+    #     remappings=[
+    #         ("/odom", "/zed_front/zed_node_0/odom"),
+    #         ("/imu/data", "/zed/zed_node/imu/data"),
+    #     ],
+    #     output="screen",
+    # )
 
     return launch.LaunchDescription([
         lidar_tf,
