@@ -1,77 +1,55 @@
-import os
-
 import launch
-import launch.actions
-import launch.events
-
-import launch_ros
 import launch_ros.actions
-import launch_ros.events
-
 from launch import LaunchDescription
-from launch_ros.actions import LifecycleNode
+from launch.actions import DeclareLaunchArgument
 from launch_ros.actions import Node
 
-import lifecycle_msgs.msg
-
-from ament_index_python.packages import get_package_share_directory
-from launch.substitutions import LaunchConfiguration
-
-
 def generate_launch_description():
+    # LIO-SAM Parameter File (Ensure this exists)
+    lio_sam_config = "/home/jacart2/dev_ws/src/LIO-SAM/config/lio_sam.yaml"
 
-    ld = launch.LaunchDescription()
+    # Declare arguments (optional, useful if you want to change parameters dynamically)
+    declare_config_arg = DeclareLaunchArgument(
+        "config_file",
+        default_value=lio_sam_config,
+        description="Path to LIO-SAM configuration file"
+    )
 
-    # Static transform publishers (if needed)
-    lidar_tf = launch_ros.actions.Node(
+    # Static Transform Publisher for LiDAR (Adjust transform if necessary)
+    lidar_tf = Node(
         name="lidar_tf",
         package="tf2_ros",
         executable="static_transform_publisher",
         arguments=["1", "0", "1.9", "0", "0", "0", "1", "base_link", "velodyne"],
+        output="screen"
     )
 
-    imu_tf = launch_ros.actions.Node(
+    # Static Transform Publisher for IMU
+    imu_tf = Node(
         name="imu_tf",
         package="tf2_ros",
         executable="static_transform_publisher",
         arguments=["0", "0", "0", "0", "0", "0", "1", "base_link", "imu_link"],
+        output="screen"
     )
 
     # LIO-SAM Node
-    lio_sam = launch_ros.actions.Node(
+    lio_sam = Node(
+        package="lio_sam",  # Ensure this matches your package name
+        executable="lio_sam_node",  # Ensure this is the correct executable
         name="lio_sam",
-        package="LIO-SAM",  # Adjust if the package name is different
-        executable="lio_sam_node",  # Use the correct executable name
-        parameters=[LaunchConfiguration('config_file', default='/dev_ws/src/LIO-SAM/config/lio_sam.yaml')],
+        parameters=[lio_sam_config],  # Directly passing the path
         remappings=[
-            ('/velodyne_points', '/velodyne_points'),
-            ('/imu/data', '/zed/zed_node/imu/data')
+            ("/velodyne_points", "/velodyne_points"),  # Ensure these match expected topics
+            ("/imu/data", "/zed/zed_node/imu/data")
         ],
-        output='screen'
+        output="screen",
+        emulate_tty=True  # Enables color logs in the terminal
     )
 
-    # Set the default path directly to the specific YAML file location
-    localization_param_dir = LaunchConfiguration(
-        "localization_param_dir",
-        default="/home/jacart2/dev_ws/src/ai-navigation/cart_control/localization_launch/param/localization.yaml",
-    )
-
-    # lidar_localization = launch_ros.actions.LifecycleNode(
-    #     name="lidar_localization",
-    #     namespace="",
-    #     package="lidar_localization_ros2",
-    #     executable="lidar_localization_node",
-    #     parameters=[localization_param_dir],
-    #     remappings=[
-    #         ("/odom", "/zed_front/zed_node_0/odom"),
-    #         ("/imu/data", "/zed/zed_node/imu/data"),
-    #     ],
-    #     output="screen",
-    # )
-
-    return launch.LaunchDescription([
+    return LaunchDescription([
+        declare_config_arg,
         lidar_tf,
         imu_tf,
-        lio_sam,
-        lidar_localization
+        lio_sam
     ])
