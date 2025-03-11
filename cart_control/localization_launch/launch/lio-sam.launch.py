@@ -6,7 +6,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     # LIO-SAM Parameter File (Ensure this exists)
-    lio_sam_config = "/home/jacart2/dev_ws/src/LIO-SAM/config/lio_sam.yaml"
+    lio_sam_config = "/dev_ws/src/LIO-SAM/config/lio_sam.yaml"
 
     # Declare arguments (optional, useful if you want to change parameters dynamically)
     declare_config_arg = DeclareLaunchArgument(
