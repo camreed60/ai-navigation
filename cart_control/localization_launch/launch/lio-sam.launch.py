@@ -5,8 +5,8 @@ from launch.actions import DeclareLaunchArgument
 from launch_ros.actions import Node
 
 def generate_launch_description():
-    # LIO-SAM Parameter File (Ensure this exists)
-    lio_sam_config = "/dev_ws/src/LIO-SAM/config/lio_sam.yaml"
+    # LIO-SAM Parameter File
+    lio_sam_config = "/dev_ws/src/LIO-SAM/config/params.yaml"
 
     # Declare arguments (optional, useful if you want to change parameters dynamically)
     declare_config_arg = DeclareLaunchArgument(
